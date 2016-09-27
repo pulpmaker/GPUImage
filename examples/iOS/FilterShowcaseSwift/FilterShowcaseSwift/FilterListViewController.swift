@@ -9,9 +9,10 @@ class FilterListViewController: UITableViewController {
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
-            let indexPath = self.tableView.indexPathForSelectedRow()
-            let filterInList = filterOperations[indexPath.row]
-            (segue.destinationViewController as FilterDisplayViewController).filterOperation = filterInList
+            if let indexPath = self.tableView.indexPathForSelectedRow {
+                let filterInList = filterOperations[indexPath.row]
+                (segue.destinationViewController as! FilterDisplayViewController).filterOperation = filterInList
+            }
         }
     }
 
@@ -26,10 +27,10 @@ class FilterListViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
 
         let filterInList:FilterOperationInterface = filterOperations[indexPath.row]
-        cell.textLabel.text = filterInList.listName
+        cell.textLabel?.text = filterInList.listName
         return cell
     }
 }

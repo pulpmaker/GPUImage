@@ -49,6 +49,14 @@
 	[super viewWillDisappear:animated];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Note: I needed to start camera capture after the view went on the screen, when a partially transition of navigation view controller stopped capturing via viewWilDisappear.
+    [videoCamera startCameraCapture];
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -386,6 +394,17 @@
             [self.filterSettingsSlider setValue:16.0];
             
             filter = [[GPUImageHistogramFilter alloc] initWithHistogramType:kGPUImageHistogramRGB];
+        }; break;
+                case GPUIMAGE_HISTOGRAM_EQUALIZATION:
+        {
+            self.title = @"Histogram Equalization";
+            self.filterSettingsSlider.hidden = NO;
+            
+            [self.filterSettingsSlider setMinimumValue:4.0];
+            [self.filterSettingsSlider setMaximumValue:32.0];
+            [self.filterSettingsSlider setValue:16.0];
+            
+            filter = [[GPUImageHistogramEqualizationFilter alloc] initWithHistogramType:kGPUImageHistogramLuminance];
         }; break;
 		case GPUIMAGE_THRESHOLD:
         {
@@ -851,6 +870,7 @@
         {
             self.title = @"Voronoi";
             self.filterSettingsSlider.hidden = YES;
+            needsSecondImage = YES;
             
             GPUImageJFAVoronoiFilter *jfa = [[GPUImageJFAVoronoiFilter alloc] init];
             [jfa setSizeInPixels:CGSizeMake(1024.0, 1024.0)];
@@ -1568,6 +1588,7 @@
         case GPUIMAGE_WHITEBALANCE: [(GPUImageWhiteBalanceFilter *)filter setTemperature:[(UISlider *)sender value]]; break;
         case GPUIMAGE_SHARPEN: [(GPUImageSharpenFilter *)filter setSharpness:[(UISlider *)sender value]]; break;
         case GPUIMAGE_HISTOGRAM: [(GPUImageHistogramFilter *)filter setDownsamplingFactor:round([(UISlider *)sender value])]; break;
+        case GPUIMAGE_HISTOGRAM_EQUALIZATION: [(GPUImageHistogramEqualizationFilter *)filter setDownsamplingFactor:round([(UISlider *)sender value])]; break;
         case GPUIMAGE_UNSHARPMASK: [(GPUImageUnsharpMaskFilter *)filter setIntensity:[(UISlider *)sender value]]; break;
 //        case GPUIMAGE_UNSHARPMASK: [(GPUImageUnsharpMaskFilter *)filter setBlurSize:[(UISlider *)sender value]]; break;
         case GPUIMAGE_GAMMA: [(GPUImageGammaFilter *)filter setGamma:[(UISlider *)sender value]]; break;
